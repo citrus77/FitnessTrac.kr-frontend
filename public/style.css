@@ -1,18 +1,62 @@
+* {
+    display: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    flex-basis: auto;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.site-header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: .5em;
+    margin-left: 1em;
+    margin-right: 1em;
+    margin-bottom: .5em;
+}
+
 .routine-single {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: justify;
     border: 1px solid black;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 5px;
     margin: 3px;
+    width: 85vw;
 }
 
 .activities {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
     border: 1px solid black;
-    border-radius: 8px;
+    border-radius: 6px;
     padding: 5px;
-    margin: 3px;
+    margin: 10px;
 }
 
 .activity-single {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    flex-basis: 100;
     border-bottom: 1px solid black;
     padding: 5px;
     margin: 3px;

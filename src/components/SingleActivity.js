@@ -5,9 +5,9 @@ const SingleActivities = ({ activity }) => {
 
     return activity 
         ? <div className='activity-single'>
-            <span>{activity.name}</span><br />
-            <span>{activity.description}</span><br />
-            <span>Count: {activity.count}</span><br />
+            <span>Name: {activity.name}</span>
+            <span>Description: {activity.description}</span>
+            <span>Repetition: {activity.count} times</span>
             <span>Duration: {activity.duration} minutes</span>
         </div>
         : 'Loading...'
