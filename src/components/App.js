@@ -3,7 +3,8 @@ import { Route, Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 
 import {
-    Home
+    Home,
+    Routines
 } from './';
 
 const { REACT_APP_BASE_URL } = process.env;
@@ -16,9 +17,10 @@ const App = () => {
 
     const fetchPublicRoutines = async () => {
         const resp = await fetch(`${REACT_APP_BASE_URL}/routines`);
-        console.log(resp)
-        const result = await resp.json();
-        console.log(result)
+        const results = await resp.json();
+        if (results) {
+            setRoutines(results);
+        };
     };
 
     const props = {
@@ -33,26 +35,26 @@ const App = () => {
             fetchPublicRoutines();
         } catch (error) {
             console.error(error);
-        }
+        };
     }, [token]);
 
     return <>
+        {/* HEADER */}
         <header className = 'site-header'>
-            {/* header and links here */}
+            <Link to ='/home' className='logo'><h1>Fitness Trac.kr</h1></Link>
+            <div className='link-bar'>
+                <Link to='/routines' className='nav-link'>Routines</Link>
+            </div>
         </header>
 
+        {/* ROUTES */}
         <main id = 'content'>
             <Route exact path = '/'>
                 <Home {...props} />
             </Route>
             <Route exact path='/routines'>
-                <h1>Routines</h1>
-                {
-                    routines.map((routine) => <div>{routine.name}</div>)
-                }
+                <Routines {...props} />                
             </Route>
-            {/* more routes */}
-
         </main>
     </>;
 }
