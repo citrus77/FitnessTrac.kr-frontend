@@ -3,6 +3,7 @@ import { Route, Link } from 'react-router-dom';
 import { useHistory } from 'react-router';
 
 import {
+    Activities,
     Home,
     Routines
 } from './';
@@ -12,8 +13,17 @@ const { REACT_APP_BASE_URL } = process.env;
 const App = () => {
     const [token, setToken] = useState('');
     const [routines, setRoutines] = useState([]);
+    const [activities, setActivities] = useState([]);
 
     const history = useHistory();
+
+    const fetchActivities = async () => {
+        const resp = await fetch(`${REACT_APP_BASE_URL}/activities`);
+        const results = await resp.json();
+        if (results) {
+            setActivities(results);
+        };
+    };
 
     const fetchPublicRoutines = async () => {
         const resp = await fetch(`${REACT_APP_BASE_URL}/routines`);
@@ -24,15 +34,18 @@ const App = () => {
     };
 
     const props = {
+        activities,
+        setActivities,
+        routines,
+        setRoutines,
         token,
         setToken,
-        routines,
-        setRoutines
     };
 
     useEffect(() => {
         try {
             fetchPublicRoutines();
+            fetchActivities();
         } catch (error) {
             console.error(error);
         };
@@ -41,9 +54,10 @@ const App = () => {
     return <>
         {/* HEADER */}
         <header className = 'site-header'>
-            <Link to ='/home' className='logo'><h1>Fitness Trac.kr</h1></Link>
+            <Link to ='/' className='logo'><h1>Fitness Trac.kr</h1></Link>
             <div className='link-bar'>
                 <Link to='/routines' className='nav-link'>Routines</Link>
+                <Link to='/activities' className='nav-link'>Activities</Link>
             </div>
         </header>
 
@@ -55,8 +69,11 @@ const App = () => {
             <Route exact path='/routines'>
                 <Routines {...props} />                
             </Route>
+            <Route exact path='/activities'>
+                <Activities {...props} />
+            </Route>
         </main>
     </>;
-}
+};
 
 export default App;

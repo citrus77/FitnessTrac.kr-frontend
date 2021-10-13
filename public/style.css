@@ -30,6 +30,11 @@ main {
     margin-bottom: .5em;
 }
 
+.nav-link {
+    margin-left: 6px;
+    margin-right: 6px;
+}
+
 .routine-single {
     display: flex;
     flex-direction: column;

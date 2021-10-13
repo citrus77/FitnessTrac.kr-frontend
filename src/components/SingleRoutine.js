@@ -12,7 +12,14 @@ const SingleRoutine = ({ children, routine}) => {
             <div className='activities'>
                 <span>Activities:</span>
                 {
-                 routine.activities.map(activity => <SingleActivity key={activity.id} activity={activity} />)
+                 routine.activities.map(activity => <SingleActivity key={activity.id} activity={activity}>
+                     {
+                        <>
+                            <span>Repetition: {activity.count} times</span>
+                            <span>Duration: {activity.duration} minutes</span>
+                        </>
+                     }
+                </SingleActivity>)
                 }
             </div>
         </div>
