@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 
 const {REACT_APP_API_URL} = process.env;
 
-const Login = ({ setLoggedIn, setMessages, setUserData, setToken }) => {
+const Login = ({ setLoggedIn, setToken }) => {
     const [ username, setUsername ] = useState('');
     const [ password, setPassword ] = useState('');
     const history = useHistory();
@@ -17,11 +17,17 @@ const Login = ({ setLoggedIn, setMessages, setUserData, setToken }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({username, password})
             })
-            const data = await response.json();           
-
-            console.log(data,'<<<<<<<<<<<<<<<<<<<<<<<')
-        }
-        catch (error) {
+            const data = await response.json();
+            const { token } = data;
+            if (token) {
+                localStorage.setItem('token', token);
+                setToken(token);
+                setLoggedIn(true);
+                setUsername('');
+                setPassword('');
+                history.push('../')
+            };
+        } catch (error) {
             console.error(error);
         };
     };

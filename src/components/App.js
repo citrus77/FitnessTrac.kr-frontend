@@ -13,17 +13,18 @@ import {
 const { REACT_APP_API_URL } = process.env;
 
 const App = () => {
-    const [token, setToken] = useState('');
-    const [routines, setRoutines] = useState([]);
+    //STATE
     const [activities, setActivities] = useState([]);
-
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [routines, setRoutines] = useState([]);
+    const [token, setToken] = useState('');
+    //HOOKS
     const history = useHistory();
 
     const fetchActivities = async () => {
         try {            
             const response = await fetch(`${REACT_APP_API_URL}/activities`,
-                { headers: { 'Content-Type': 'application/json'} }
-            )
+                { headers: { 'Content-Type': 'application/json'} })
             const data = await response.json();
             if (data) {
                 setActivities(data);
@@ -36,8 +37,7 @@ const App = () => {
     const fetchPublicRoutines = async () => {
         try {            
             const response = await fetch(`${REACT_APP_API_URL}/routines`,
-            { headers: { 'Content-Type': 'application/json'} }
-        )
+            { headers: { 'Content-Type': 'application/json'} })
             const data = await response.json();
             if (data) {
                 setRoutines(data);
@@ -50,6 +50,8 @@ const App = () => {
     const props = {
         activities,
         setActivities,
+        loggedIn,
+        setLoggedIn,
         routines,
         setRoutines,
         token,
@@ -60,8 +62,6 @@ const App = () => {
         try {
             fetchPublicRoutines();
             fetchActivities();
-            console.log(routines)
-            console.log(activities)
         } catch (error) {
             console.error(error);
         };
@@ -80,10 +80,10 @@ const App = () => {
             <Link to ='/' className='logo'><h1>Fitness Trac.kr</h1></Link>
             <div className='link-bar'>
                 <Link to='/routines' className='nav-link'>Routines</Link>
-                <Link to='/activities' className='nav-link'>Activities</Link> { 
-                token
-                    ? <button onClick={() => { setToken(''); setLoggedIn(false); history.push('./')}} className='nav-link logout set-right'>Log out</button>
-                    : <Link to="/users/login" className="nav-link set-right">Login</Link>
+                <Link to='/activities' className='nav-link'>Activities</Link>
+                { !loggedIn
+                    ?<Link to='/users/login' className='nav-link'>Log in</Link>
+                    : <button onClick={()=> { setToken(''); setLoggedIn(false) }}>Logout</button>
                 }
             </div>
         </header>

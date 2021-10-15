@@ -9,7 +9,8 @@ const SingleRoutine = ({ children, routine}) => {
             <span><h3>{routine.name}</h3></span>
             <span><h3 className='creator-name'>created by {routine.creatorName}</h3></span>
             <span>Goal: {routine.goal}</span>
-            <div className='activities'>
+            {
+            routine.activities.length > 0 && <div className='activities'>
                 <span>Activities:</span>
                 {
                  routine.activities.map(activity => <SingleActivity key={activity.id} activity={activity}>
@@ -22,6 +23,7 @@ const SingleRoutine = ({ children, routine}) => {
                 </SingleActivity>)
                 }
             </div>
+            }
         </div>
         : 'Loading...'
 };
