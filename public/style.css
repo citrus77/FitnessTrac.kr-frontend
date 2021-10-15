@@ -22,11 +22,10 @@ main {
 .site-header {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: space-between;
     margin-top: .5em;
-    margin-left: 1em;
-    margin-right: 1em;
+    margin-left: 10em;
+    margin-right: 10em;
     margin-bottom: .5em;
 }
 

@@ -26,11 +26,4 @@ const SingleRoutine = ({ children, routine}) => {
         : 'Loading...'
 };
 
-// creatorName
-// goal
-// activities
-//     count
-//     duration
-//     name
-//     description
 export default SingleRoutine;

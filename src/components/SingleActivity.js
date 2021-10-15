@@ -1,8 +1,6 @@
 import React from 'react';
 
 const SingleActivities = ({ children, activity }) => {
-    console.log(activity)
-
     return activity 
         ? <div className='activity-single'>
             <span>Name: {activity.name}</span>
