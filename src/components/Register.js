@@ -16,17 +16,18 @@ const Register = ({ setLoggedIn, setToken }) => {
             const response = await fetch(`${REACT_APP_API_URL}/users/register`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({username, password})
+                body: JSON.stringify({username, password}),
             })
             const data = await response.json();
-            const { token } = data;
+            const { token, user } = data;
             if (token) {
                 localStorage.setItem('token', token);
+                localStorage.setItem('username', user.username);
                 setToken(token);
                 setLoggedIn(true);
                 setUsername('');
                 setPassword('');
-                history.push('../')
+                history.push('/')
             };
         } catch (error) {
             console.error(error);
@@ -44,7 +45,7 @@ const Register = ({ setLoggedIn, setToken }) => {
 
             <button type="submit" disabled={ !password || !username || password.length < 8 || password !== verPass }>Register</button>
         </form>
-        <span>Already have an account? Click <Link to='/users/login'>here</Link> to login!</span>
+        <span>Already have an account? Click <Link to='/account/login'>here</Link> to login!</span>
 
         { password !== verPass && <span className='no-match-alert'>Passwords must match!</span> }
 

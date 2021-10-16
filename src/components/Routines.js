@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 
 import { SingleRoutine } from './'
 
-const Routines = ({setRoutines, fetchRoutines, routines, token, userData}) => {
-    console.log(routines)
+const Routines = ({ routines }) => {
     return <>
         {
-         routines.map(routine => <SingleRoutine key={routine.id} routine={routine}>
+        routines
+            ? routines.map(routine => <SingleRoutine key={routine.id} routine={routine}>
              {/* CHILDREN */}
-         </SingleRoutine>)
+            </SingleRoutine>)
+            : 'Loading...'
         }
     </>;
 };

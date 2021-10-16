@@ -15,17 +15,19 @@ const Login = ({ setLoggedIn, setToken }) => {
             const response = await fetch(`${REACT_APP_API_URL}/users/login`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({username, password})
+                body: JSON.stringify({username, password}),
             })
             const data = await response.json();
-            const { token } = data;
+            const { token, user } = data;
             if (token) {
                 localStorage.setItem('token', token);
+                localStorage.setItem('username', user.username);
                 setToken(token);
                 setLoggedIn(true);
                 setUsername('');
                 setPassword('');
-                history.push('../')
+                history.push('./routines');
+                return;
             };
         } catch (error) {
             console.error(error);
@@ -39,7 +41,7 @@ const Login = ({ setLoggedIn, setToken }) => {
             <input type="password" placeholder="password" onChange={(e) => setPassword(e.target.value)} value={password}></input>
             <button type="submit" disabled={password < 8}>Login</button>
         </form>
-        <span>Don't have an account? Click <Link to='/users/register'>here</Link> to register!</span>
+        <span>Don't have an account? Click <Link to='/account/register'>here</Link> to register!</span>
     </>
 };
 

@@ -9,19 +9,24 @@ const SingleRoutine = ({ children, routine}) => {
             <span><h3>{routine.name}</h3></span>
             <span><h3 className='creator-name'>created by {routine.creatorName}</h3></span>
             <span>Goal: {routine.goal}</span>
+            <span>Private: {!routine.isPublic ? 'no': 'yes' }</span>
             {
             routine.activities.length > 0 && <div className='activities'>
                 <span>Activities:</span>
+                <ul className='activities-list'>
                 {
-                 routine.activities.map(activity => <SingleActivity key={activity.id} activity={activity}>
+                 routine.activities.map(activity => <li className='activity-single' key={activity.id}>
+                     <SingleActivity activity={activity}>
                      {
                         <>
                             <span>Repetition: {activity.count} times</span>
                             <span>Duration: {activity.duration} minutes</span>
                         </>
                      }
-                </SingleActivity>)
+                    </SingleActivity>
+                </li>)
                 }
+                </ul>
             </div>
             }
         </div>
