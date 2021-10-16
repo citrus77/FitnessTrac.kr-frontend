@@ -10,6 +10,7 @@ const SingleRoutine = ({ children, routine}) => {
             <span><h3 className='creator-name'>created by {routine.creatorName}</h3></span>
             <span>Goal: {routine.goal}</span>
             <span>Private: {!routine.isPublic ? 'no': 'yes' }</span>
+            { children }
             {
             routine.activities.length > 0 && <div className='activities'>
                 <span>Activities:</span>
