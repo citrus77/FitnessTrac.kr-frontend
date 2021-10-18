@@ -1,51 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router';
 
-const {REACT_APP_API_URL} = process.env;
+import { SingleRoutine } from './'
+import { callApi } from '../util';
 
-import { SingleRoutine } from './';
-
-
-const MyRoutines = ({ setUserRoutines, token, username, userRoutines }) => {
+const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, setUserRoutines, userRoutines }) => {
     const [name, setName] = useState('');
     const [goal, setGoal] = useState('');
     const [isPublic, setIsPublic] = useState(false);
+    const [error, setError] = useState('');
 
-    const fetchUserRoutines = async () => {
-        try {
-            if (username) {
-                const response = await fetch(`${REACT_APP_API_URL}/users/${username}/routines`, {
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
-                })
-                const data = await response.json();
-                if (data) {
-                    setUserRoutines(data);
-                } else {
-                    setUserRoutines([]);
-                };
-            };
-            return;
-        } catch (error) {
-            console.error(error);
-        };
-    };
+    const token = localStorage.getItem('token');
+    const history = useHistory();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/routines`, {
+            const newRoutine = await callApi({
+                url: `/routines`,
                 method: "POST",
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({name, goal, isPublic}),
+                body: {name, goal, isPublic},
+                token
             })
-            const data = await response.json();
-            if (data) {
+            if (newRoutine.error) {
+                setError(newRoutine.error);
+            };
+            if (newRoutine) {
+                await callApi({url: '/routines', token});
+                console.log(newRoutine)
                 setName('');
                 setGoal('');
                 setIsPublic(false);
+                await fetchPublicRoutines;
                 await fetchUserRoutines();
+                history.push('/user/routines');
             };
-            return;
+            return newRoutine;
         } catch (error) {
             console.error(error);
         };
@@ -53,59 +44,69 @@ const MyRoutines = ({ setUserRoutines, token, username, userRoutines }) => {
 
     const handleDelete = async (routineId) => {
         try {
-            await fetch(`${REACT_APP_API_URL}/routines/${routineId}`, {
+            await callApi({
+                url: `/routines/${routineId}`, 
                 method: "DELETE",
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                token            
             })
+            await callApi({url: '/routines', token});
             await fetchUserRoutines();
+            await fetchPublicRoutines();
+            history.push('/user/routines');
         } catch (error) {
             console.error(error);
         };    
     };
 
-    useEffect(() => {
+    const handleAddActivity = async () => {
         try {
-            fetchUserRoutines();
+            
         } catch (error) {
             console.error(error);
         };
-    }, []);
-    
+    };
+
     return <>
         <div className='form-container'>
-        <h2>Create a new routine:</h2>
-        <form onSubmit={handleSubmit} className='login-form'>
-            <input type='text' placeholder='Name your routine!' onChange={(e) => setName(e.target.value)} value={name} />
-
-            <input type="text" placeholder="What is your goal?" onChange={(e) => setGoal(e.target.value)} value={goal}></input>
-
-            <fieldset>
-                <label>Private:</label>
-                <select
-                    name='isPublic' 
-                    placeholder='No'
-                    value={isPublic}                    
-                    onChange={(e) => setIsPublic(e.target.value)}>
-                    <option value='true'>no</option>
-                    <option value='false'>yes</option>
-                </select>
-            </fieldset>
-            
-            <button type="submit" disabled={!name || !goal}>Create Routine</button>
-        </form>
+            <form onSubmit={handleSubmit}>
+                <label>Create a new routine:</label>
+                <fieldset>
+                    <label>Name: </label>
+                    <input type='text' placeholder=' enter name' onChange={(e) => {setName(e.target.value)}} />
+                </fieldset>
+                <fieldset>
+                    <label>Goal: </label>
+                    <input type='text' placeholder=' enter goal' onChange={(e) => {setGoal(e.target.value)}} />
+                </fieldset>
+                <fieldset>
+                    <label>Public: </label>
+                    <select placeholder='no' onChange={(e) => {setIsPublic(e.target.value)}}>
+                        <option value='false'>NO</option>
+                        <option value='true'>YES</option>
+                    </select>
+                </fieldset>
+                <button type='submit'>Create Routine</button>
+                { error
+                    ? <div className='password-alert'>{error}</div>
+                    : null
+                }
+            </form>
         </div>
-        {
-        userRoutines.length > 0
-        ? userRoutines.map(routine => {
-                return <SingleRoutine key={routine.id} routine={routine}>
+        
+        { userRoutines.length > 0
+            ? 
+                <div className='routines'>
+                    <span>Routines:</span>
                     {
-                        <button onClick={() => handleDelete(routine.id)}>Delete</button>
+                    userRoutines.map(routine => <SingleRoutine key={routine.id} routine={routine}>
+                        {<button onClick={() => handleDelete(routine.id)}>Delete</button>}
+                        
+                    </SingleRoutine>)
                     }
-                </SingleRoutine>
-            })
-        : null    
-        }
-    </>;
+                </div>
+            
+            : null }
+    </>
 };
 
 export default MyRoutines;

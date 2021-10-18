@@ -2,15 +2,17 @@ import React from 'react';
 
 import { SingleActivity } from './'
 
-const SingleRoutine = ({ children, routine}) => {
+const SingleRoutine = ({ children, routine }) => {
 
     return routine 
         ? <div className='routine-single'>
             <span><h3>{routine.name}</h3></span>
             <span><h3 className='creator-name'>created by {routine.creatorName}</h3></span>
             <span>Goal: {routine.goal}</span>
-            <span>Private: {!routine.isPublic ? 'no': 'yes' }</span>
+            <span>Public: {routine.isPublic ? 'yes': 'no' }</span>
+
             { children }
+
             {
             routine.activities.length > 0 && <div className='activities'>
                 <span>Activities:</span>

@@ -26,7 +26,7 @@ const Login = ({ setLoggedIn, setToken }) => {
                 setLoggedIn(true);
                 setUsername('');
                 setPassword('');
-                history.push('./routines');
+                history.push('/');
                 return;
             };
         } catch (error) {

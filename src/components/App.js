@@ -5,142 +5,146 @@ import { useHistory } from 'react-router';
 import {
     Activities,
     Home,
-    Login,
+    LoginRegister,
     MyRoutines,
-    Register,
     Routines
-} from './';
+} from './'
 
-const { REACT_APP_API_URL } = process.env;
+import { callApi } from '../util';
 
 const App = () => {
-    //STATE
+    const [publicRoutines, setPublicRoutines] = useState([]);
     const [activities, setActivities] = useState([]);
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [routines, setRoutines] = useState([]);
     const [token, setToken] = useState('');
+    const [userName, setUserName] = useState('');
     const [userRoutines, setUserRoutines] = useState([]);
-    const [username, setUsername] = useState('');
-    //HOOKS
+
     const history = useHistory();
-
-    const fetchActivities = async () => {
-        try {            
-            const response = await fetch(`${REACT_APP_API_URL}/activities`,
-                { headers: { 'Content-Type': 'application/json'} })
-            const data = await response.json();
-            if (data) {
-                setActivities(data);
-            };
-        } catch (error) {
-            throw error;
-        };
-    };
-
+    
     const fetchPublicRoutines = async () => {
-        try {            
-            const response = await fetch(`${REACT_APP_API_URL}/routines`,
-            { headers: { 'Content-Type': 'application/json'} })
-            const data = await response.json();
-            if (data) {
-                setRoutines(data);
-            };
-        } catch (error) {
-            throw error;
-        };
-    };
-
-    const getUserName = async () => {
         try {
-            const response = await fetch(`${REACT_APP_API_URL}/users/me`, {
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
-            })
-            const data = await response.json();
-            const {username} = data;
-            setUsername(username);
-            return;
+            const fetchedRoutines = await callApi ({ url: `/routines` });
+            if (fetchedRoutines) {
+                setPublicRoutines(fetchedRoutines);
+            };
+            return;            
         } catch (error) {
             console.error(error);
-        };
+        };        
+    };
+
+    const fetchUserRoutines = async () => {
+        const localToken = localStorage.getItem('token');
+        const localUsername = localStorage.getItem('username');
+        try {
+            if (localUsername) {
+                const fetchedRoutines = await callApi ({ url: `/users/${localUsername}/routines`, token: `${localToken}` });
+                if (fetchedRoutines) {
+                    console.log(fetchedRoutines)
+                    setUserRoutines(fetchedRoutines);
+                };
+            };
+            return;            
+        } catch (error) {
+            console.error(error);
+        };        
+    };     
+
+    const fetchActivities = async () => {
+        try {
+            const fetchedActivities = await callApi ({ url: `/activities` });
+            if (fetchedActivities) {
+                setActivities(fetchedActivities);
+            };
+            return;
+        } catch (error) {
+            console.error (error);
+        };        
     };
 
     const props = {
         activities,
         setActivities,
-        loggedIn,
-        setLoggedIn,
-        routines,
-        setRoutines,
+        publicRoutines,
+        setPublicRoutines,
         token,
         setToken,
+        userName,
+        setUserName,
         userRoutines,
         setUserRoutines,
-        username,
-        setUsername
+
+        fetchPublicRoutines,
+        fetchUserRoutines
     };
 
     useEffect(() => {
         try {
-            fetchPublicRoutines();
             fetchActivities();
-            getUserName();
+            fetchPublicRoutines();
+            fetchUserRoutines();
+            if (token) {
+                fetchUserRoutines();
+            };
         } catch (error) {
             console.error(error);
         };
-    }, [token]);
-    
+    }, [token])
+
     useEffect(() => {
         const foundToken = localStorage.getItem('token');
         if (foundToken) {
             setToken(foundToken);
-            setLoggedIn(true);
         };
     });
 
     return <>
-        {/* HEADER */}
-        <header className = 'site-header'>
-            <div className='logo-container'>
-                <Link to ='/' className='logo'><h1>Fitness Trac.kr</h1></Link>
-            </div>
+        <header className='site-header'>
+            <div className='logo'>Fitness Trac.kr</div>
             <div className='link-bar'>
-                <Link to='/' className='nav-link '>Home</Link>
+                <Link to='/' className='nav-link'>Home</Link>
                 <Link to='/routines' className='nav-link'>Routines</Link>
-
-                {loggedIn 
-                    ? <Link to='/account/routines' className='nav-link'>My Routines</Link>
-                    : null
+                {
+                 token ? <Link to='/user/routines' className='nav-link'>My Routines</Link> : null  
                 }
                 <Link to='/activities' className='nav-link'>Activities</Link>
-                { loggedIn
-                    ? <button onClick={()=> { setToken(''); setLoggedIn(false); localStorage.removeItem('token');localStorage.removeItem('username'); history.push('/') }}>Logout</button>
-                    : <Link to='/account/login'>Log in</Link>
+                {
+                 token 
+                    ? <button className='logout' onClick={() => {
+                        localStorage.removeItem('token');
+                        localStorage.removeItem('username');
+                        setUserName('');
+                        setToken('');
+                        setUserRoutines([]);
+                        history.push('/');
+                    }}>Log out</button>
+                    : <Link to='/account/login' className='nav-link'>Sign in</Link>
                 }
             </div>
         </header>
 
-        {/* ROUTES */}
-        <main id = 'content'>
-            <Route exact path = '/'>
+        <main>
+            <Route exact path='/'>
                 <Home {...props} />
             </Route>
+
             <Route exact path='/routines'>
-                <Routines {...props} />                
+                <Routines {...props} />
             </Route>
-            <Route exact path='/account/routines'>
-                <MyRoutines {...props} />
-            </Route>
+
             <Route exact path='/activities'>
                 <Activities {...props} />
             </Route>
-            <Route exact path='/account/login'>
-                <Login {...props} />
+
+            <Route exact path='/user/routines'>
+                <MyRoutines {...props} />
             </Route>
-            <Route exact path='/account/register'>
-                <Register {...props} />
+
+            <Route exact path='/account/:method'>
+                <LoginRegister {...props} />
             </Route>
         </main>
-    </>
+    </>;
 };
 
 export default App;
