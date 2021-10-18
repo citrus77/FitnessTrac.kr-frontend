@@ -5,7 +5,7 @@ import { useParams, useHistory } from 'react-router';
 import { SingleRoutine } from './'
 import { callApi } from '../util';
 
-const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, setUserRoutines, userRoutines }) => {
+const MyRoutines = ({ fetchPublicRoutines, fetchUserRoutines, userRoutines }) => {
     const [name, setName] = useState('');
     const [goal, setGoal] = useState('');
     const [isPublic, setIsPublic] = useState(false);
@@ -17,26 +17,25 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, setUse
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const newRoutine = await callApi({
+            const response = await callApi({
                 url: `/routines`,
                 method: "POST",
                 body: {name, goal, isPublic},
                 token
             })
-            if (newRoutine.error) {
-                setError(newRoutine.error);
+            if (response.error) {
+                setError(response.error);
             };
-            if (newRoutine) {
+            if (response) {
                 await callApi({url: '/routines', token});
-                console.log(newRoutine)
                 setName('');
                 setGoal('');
                 setIsPublic(false);
-                await fetchPublicRoutines;
+                await fetchPublicRoutines();
                 await fetchUserRoutines();
                 history.push('/user/routines');
             };
-            return newRoutine;
+            return response;
         } catch (error) {
             console.error(error);
         };
@@ -50,12 +49,40 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, setUse
                 token            
             })
             await callApi({url: '/routines', token});
-            await fetchUserRoutines();
-            await fetchPublicRoutines();
+            fetchUserRoutines();
+            fetchPublicRoutines();
             history.push('/user/routines');
         } catch (error) {
             console.error(error);
         };    
+    };
+
+    const handleEdit = (routineId) => async (e) => {
+        e.preventDefault();
+        try {
+            const response = await callApi({
+                url: `routines/${routineId}`,
+                method: 'PATCH',
+                body: { name, goal },
+                token
+            })
+            if (response.error) {
+                setError(response.error);
+            };
+            if (response) {
+                console.log(response)
+                await callApi({url: '/routines', token});
+                setName('');
+                setGoal('');
+                setIsPublic(false);
+                await fetchPublicRoutines();
+                await fetchUserRoutines();
+                history.push('/user/routines');
+            };
+            return response;
+        } catch (error) {
+            console.error (error);
+        };
     };
 
     const handleAddActivity = async () => {
@@ -99,8 +126,24 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, setUse
                     <span>Routines:</span>
                     {
                     userRoutines.map(routine => <SingleRoutine key={routine.id} routine={routine}>
-                        {<button onClick={() => handleDelete(routine.id)}>Delete</button>}
+
+                        { <button onClick={() => handleDelete(routine.id)}>Delete routine</button> }
                         
+                        { <div>
+                            <form onSubmit={handleEdit(routine.id)}>
+                                <label>Edit routine:</label>
+                                <fieldset>
+                                    <label>Change name: </label>
+                                    <input type='text' value={name} placeholder={routine.name} onChange={(e) => setName(e.target.value)} />
+                                </fieldset>
+                                <fieldset>
+                                    <label>Change goal: </label>
+                                    <input type='text' value={goal} placeholder={routine.goal} onChange={(e) => setGoal(e.target.value)} />
+                                </fieldset>
+                            </form>
+                            <button type='submit'>Submit changes</button>
+                        </div> }
+
                     </SingleRoutine>)
                     }
                 </div>

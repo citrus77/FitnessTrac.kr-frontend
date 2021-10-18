@@ -40,7 +40,6 @@ const App = () => {
             if (localUsername) {
                 const fetchedRoutines = await callApi ({ url: `/users/${localUsername}/routines`, token: `${localToken}` });
                 if (fetchedRoutines) {
-                    console.log(fetchedRoutines)
                     setUserRoutines(fetchedRoutines);
                 };
             };
@@ -74,6 +73,7 @@ const App = () => {
         userRoutines,
         setUserRoutines,
 
+        fetchActivities,
         fetchPublicRoutines,
         fetchUserRoutines
     };
