@@ -4,12 +4,16 @@ import { useParams, useHistory } from 'react-router';
 
 import { SingleRoutine } from './'
 import { callApi } from '../util';
+import Activities from './Activities';
 
-const MyRoutines = ({ fetchPublicRoutines, fetchUserRoutines, userRoutines }) => {
+const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRoutines }) => {
     const [name, setName] = useState('');
     const [goal, setGoal] = useState('');
     const [isPublic, setIsPublic] = useState(false);
     const [error, setError] = useState('');
+    const [duration, setDuration] = useState(Number);
+    const [count, setCount] = useState(Number);
+    const [activityId, setActivityId] = useState(Number)
 
     const token = localStorage.getItem('token');
     const history = useHistory();
@@ -85,9 +89,20 @@ const MyRoutines = ({ fetchPublicRoutines, fetchUserRoutines, userRoutines }) =>
         };
     };
 
-    const handleAddActivity = async () => {
+    const handleAddActivity = (routineId) => async (e) => {
+        e.preventDefault();
         try {
-            
+            console.log(routineId, activityId, duration, count)
+            const response = await callApi({
+                url: `/routines/${routineId}/activities`,
+                method: 'POST',
+                body: { activityId, count, duration }
+            });
+            if (response) {
+                console.log(response);
+                await fetchUserRoutines();
+            }
+            return response;
         } catch (error) {
             console.error(error);
         };
@@ -142,6 +157,23 @@ const MyRoutines = ({ fetchPublicRoutines, fetchUserRoutines, userRoutines }) =>
                                 </fieldset>
                             </form>
                             <button type='submit'>Submit changes</button>
+                        </div> }
+
+                        { <div>
+                            <form onSubmit={handleAddActivity(routine.id)}>
+                                <select onChange={(e) => setActivityId(e.target.value)}>
+                                {activities.map(activity => <option value={activity.id}>{activity.name}</option>)}
+                                </select>
+                                <fieldset>
+                                    <label>Count: </label>
+                                    <input type='number' placeholder='number of repetitions' onChange={(e) => setCount(e.target.value)}></input>
+                                </fieldset>
+                                <fieldset>
+                                    <label>Duration: </label>
+                                    <input type='number' placeholder='number of minutes' onChange={(e) => setDuration(e.target.value)}></input>
+                                </fieldset>
+                                <button type='submit'>Add activity</button>
+                            </form>
                         </div> }
 
                     </SingleRoutine>)
