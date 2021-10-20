@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Route } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router';
 
 const {REACT_APP_API_URL} = process.env;

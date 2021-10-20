@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useParams, useHistory } from 'react-router';
+import { useHistory } from 'react-router';
 
 import { SingleRoutine } from './'
 import { callApi } from '../util';
-import Activities from './Activities';
 
 const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRoutines }) => {
     const [name, setName] = useState('');
@@ -69,8 +67,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                 method: 'PATCH',
                 body: { name, goal },
                 token
-            })
-                console.log(response)
+            });
             if (response.error) {
                 setError(response.error);
             };
