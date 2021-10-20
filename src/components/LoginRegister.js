@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { useParams, useHistory } from 'react-router';
 import { callApi } from '../util';
 
-const LoginRegister = ({ fetchUserRoutines, setToken, setUserName, setUserRoutines }) => {
+const LoginRegister = ({ fetchUserRoutines, setToken, setUserName, setUserId }) => {
     const [ username, setUsername ] = useState('');
     const [ password, setPassword ] = useState('');
     const [ verPass, setVerPass ] = useState('');
@@ -39,6 +39,8 @@ const LoginRegister = ({ fetchUserRoutines, setToken, setUserName, setUserRoutin
                         if (user) {
                             setUserName(user.username);
                             localStorage.setItem('username', user.username);
+                            setUserId(user.id)
+                            localStorage.setItem('userId', user.id)
                             await fetchUserRoutines();
                             setUsername('');
                             setPassword('');
@@ -101,7 +103,8 @@ const LoginRegister = ({ fetchUserRoutines, setToken, setUserName, setUserRoutin
 
                 { error
                     ? <span>{error}</span>
-                    : null }
+                    : null
+                }
 
                 {
                 params.method === 'register' 

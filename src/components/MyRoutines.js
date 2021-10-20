@@ -18,7 +18,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
     const token = localStorage.getItem('token');
     const history = useHistory();
 
-    const handleSubmit = async (e) => {
+    const handleAddRoutine = async (e) => {
         e.preventDefault();
         try {
             const response = await callApi({
@@ -45,7 +45,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
         };
     };
 
-    const handleDelete = async (routineId) => {
+    const handleDeleteRoutine = async (routineId) => {
         try {
             await callApi({
                 url: `/routines/${routineId}`, 
@@ -61,7 +61,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
         };    
     };
 
-    const handleEdit = (routineId) => async (e) => {
+    const handleEditRoutine = (routineId) => async (e) => {
         e.preventDefault();
         try {
             const response = await callApi({
@@ -70,12 +70,11 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                 body: { name, goal },
                 token
             })
+                console.log(response)
             if (response.error) {
                 setError(response.error);
             };
             if (response) {
-                console.log(response)
-                await callApi({url: '/routines', token});
                 setName('');
                 setGoal('');
                 setIsPublic(false);
@@ -92,7 +91,6 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
     const handleAddActivity = (routineId) => async (e) => {
         e.preventDefault();
         try {
-            console.log(routineId, activityId, duration, count)
             const response = await callApi({
                 url: `/routines/${routineId}/activities`,
                 method: 'POST',
@@ -100,7 +98,6 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                 token
             });
             if (response) {
-                console.log(response);
                 await fetchUserRoutines();
             }
             return response;
@@ -111,7 +108,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
 
     return <>
         <div className='form-container'>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleAddRoutine}>
                 <label>Create a new routine:</label>
                 <fieldset>
                     <label>Name: </label>
@@ -143,11 +140,11 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                     {
                     userRoutines.map(routine => <SingleRoutine key={routine.id} routine={routine}>
 
-                        { <button onClick={() => handleDelete(routine.id)}>Delete routine</button> }
+                        { <button onClick={() => handleDeleteRoutine(routine.id)}>Delete routine</button> }
                         
                         { <div>
                             <h3>Edit Routine</h3>
-                            <form onSubmit={handleEdit(routine.id)}>
+                            <form onSubmit={handleEditRoutine(routine.id)}>
                                 <fieldset>
                                     <label>Change name: </label>
                                     <input type='text' value={name} placeholder={routine.name} onChange={(e) => setName(e.target.value)} />
@@ -164,7 +161,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                             <h3>Add activity to routine</h3>
                             <form onSubmit={handleAddActivity(routine.id)}>
                                 <select onChange={(e) => setActivityId(e.target.value)}>
-                                {activities.map(activity => <option value={activity.id}>{activity.name}</option>)}
+                                {activities.map(activity => <option key={activity.id} value={activity.id}>{activity.name}</option>)}
                                 </select>
                                 <fieldset>
                                     <label>Count: </label>

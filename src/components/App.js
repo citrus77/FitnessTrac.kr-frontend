@@ -69,6 +69,8 @@ const App = () => {
         setPublicRoutines,
         token,
         setToken,
+        userId,
+        setUserId,
         userName,
         setUserName,
         userRoutines,
@@ -94,9 +96,17 @@ const App = () => {
 
     useEffect(() => {
         const foundToken = localStorage.getItem('token');
+        const foundUserName = localStorage.getItem('username');
+        const foundUserId = localStorage.getItem('userId');
         if (foundToken) {
             setToken(foundToken);
         };
+        if (foundUserName) {
+            setUserName(foundUserName);
+        };
+        if (foundUserId) {
+            setUserName(foundUserId);
+        }
     });
 
     return <>
@@ -114,6 +124,7 @@ const App = () => {
                     ? <button className='logout' onClick={() => {
                         localStorage.removeItem('token');
                         localStorage.removeItem('username');
+                        localStorage.removeItem('userId');
                         setUserName('');
                         setToken('');
                         setUserRoutines([]);
