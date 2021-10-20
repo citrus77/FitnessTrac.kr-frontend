@@ -96,7 +96,8 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
             const response = await callApi({
                 url: `/routines/${routineId}/activities`,
                 method: 'POST',
-                body: { activityId, count, duration }
+                body: { activityId, count, duration },
+                token
             });
             if (response) {
                 console.log(response);
@@ -145,8 +146,8 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                         { <button onClick={() => handleDelete(routine.id)}>Delete routine</button> }
                         
                         { <div>
+                            <h3>Edit Routine</h3>
                             <form onSubmit={handleEdit(routine.id)}>
-                                <label>Edit routine:</label>
                                 <fieldset>
                                     <label>Change name: </label>
                                     <input type='text' value={name} placeholder={routine.name} onChange={(e) => setName(e.target.value)} />
@@ -160,6 +161,7 @@ const MyRoutines = ({ activities, fetchPublicRoutines, fetchUserRoutines, userRo
                         </div> }
 
                         { <div>
+                            <h3>Add activity to routine</h3>
                             <form onSubmit={handleAddActivity(routine.id)}>
                                 <select onChange={(e) => setActivityId(e.target.value)}>
                                 {activities.map(activity => <option value={activity.id}>{activity.name}</option>)}

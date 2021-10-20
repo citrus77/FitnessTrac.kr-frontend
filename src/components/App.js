@@ -18,6 +18,7 @@ const App = () => {
     const [token, setToken] = useState('');
     const [userName, setUserName] = useState('');
     const [userRoutines, setUserRoutines] = useState([]);
+    const [userId, setUserId] = useState(Number)
 
     const history = useHistory();
     
